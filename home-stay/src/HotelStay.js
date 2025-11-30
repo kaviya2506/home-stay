@@ -4,7 +4,6 @@ import "./HotelStay.css";
 // Local images
 import image1 from "./david_img4.jpg";
 import image2 from "./david_img5.jpg";
-import image3 from "./image3.jpeg";
 import image4 from "./david_img1.jpg";
 import image5 from "./david_img2.jpg";
 import image6 from "./david_img3.jpg";
@@ -27,22 +26,24 @@ import webLogo from "./logo/website.gif";
 import davidimg1 from "./david_img.avif";
 
 function HotelStay() {
-  // State
   const [selectedImage, setSelectedImage] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [locationSlide, setLocationSlide] = useState(0);
-  const [triggerLocation, setTriggerLocation] = useState(false);
-  const [footerSlide, setFooterSlide] = useState(0);
-  const [isVisible, setIsVisible] = useState(false);
 
+  const [locationSlide, setLocationSlide] = useState(0);
+  const [footerSlide, setFooterSlide] = useState(0);
+
+  const [isVisible, setIsVisible] = useState(false);
+  const [galleryVisible, setGalleryVisible] = useState(false);
+  const [heroVisible, setHeroVisible] = useState(false);
+
+  // Refs
+  const heroRef = useRef(null);
   const locationRef = useRef(null);
   const galleryRef = useRef(null);
+  const galleryRowRef = useRef(null);
 
-  const galleryImages = [image1, image2, image3, image4, image5, image6];
-  const [galleryVisible, setGalleryVisible] = useState(false);
-  const [triggerDrop, setTriggerDrop] = useState(false);
+  const galleryImages = [image1, image2, image4, image5, image6];
 
-  // ✅ Declare slides only once here
   const slides = [
     { text: "Welcome to David Residency", image: image7 },
     { text: "Luxury Rooms & Suites", image: image8 },
@@ -51,55 +52,54 @@ function HotelStay() {
   ];
 
   const footerslides = [
-    {
-      text: "Explore our new Branch",
-      image: image12,
-      link: "https://www.makemytrip.com/hotels/olive_by_david_residency-details-madurai.html"
-    },
-    {
-      text: "Olive Residency",
-      image: image11,
-      link: "https://www.tripadvisor.com/Hotel_Review-yourlink"
-    },
-    {
-      text: "Explore our new Branch",
-      image: image13,
-      link: "https://www.instagram.com/yourprofile"
-    },
-    {
-      text: "Book Your Stay Today!",
-      image: image14,
-      link: "https://www.booking.com/hotel/yourlink"
-    }
+    { text: "Explore our new Branch", image: image12 },
+    { text: "Olive Residency", image: image11 },
+    { text: "Explore our new Branch", image: image13 },
+    { text: "Book Your Stay Today!", image: image14 }
   ];
 
-  // ✅ Location slideshow effect
+  // Gallery scroll handler
+  const handleGalleryScroll = (direction) => {
+    if (galleryRowRef.current) {
+      const scrollAmount = galleryRowRef.current.offsetWidth;
+      galleryRowRef.current.scrollBy({
+        left: direction === "left" ? -scrollAmount : scrollAmount,
+        behavior: "smooth"
+      });
+    }
+  };
+
+  // Auto-slideshow for gallery
   useEffect(() => {
-    if (!triggerLocation) return;
+    if (!galleryVisible) return;
     const interval = setInterval(() => {
-      setLocationSlide((prev) => (prev + 1) % slides.length);
+      if (galleryRowRef.current) {
+        galleryRowRef.current.scrollBy({
+          left: galleryRowRef.current.offsetWidth,
+          behavior: "smooth"
+        });
+      }
     }, 3000);
     return () => clearInterval(interval);
-  }, [triggerLocation, slides.length]);
+  }, [galleryVisible]);
 
-  // ✅ Footer slideshow effect
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setFooterSlide((prev) => (prev + 1) % footerslides.length);
-    }, 4000);
-    return () => clearInterval(interval);
-  }, [footerslides.length]);
-
-  // Scroll-triggered reveal for gallery
+  // Hero scroll trigger
   useEffect(() => {
     const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setGalleryVisible(true);
-          observer.unobserve(entry.target);
-        }
-      },
-      { threshold: 0.2 }
+      ([entry]) => setHeroVisible(entry.isIntersecting),
+      { threshold: 0.3 }
+    );
+    if (heroRef.current) observer.observe(heroRef.current);
+    return () => {
+      if (heroRef.current) observer.unobserve(heroRef.current);
+    };
+  }, []);
+
+  // Gallery scroll trigger
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => setGalleryVisible(entry.isIntersecting),
+      { threshold: 0.3 }
     );
     if (galleryRef.current) observer.observe(galleryRef.current);
     return () => {
@@ -107,46 +107,55 @@ function HotelStay() {
     };
   }, []);
 
-  // Scroll animation for location section
+  // Location scroll trigger
   useEffect(() => {
     const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setIsVisible(true);
-            observer.unobserve(entry.target);
-          }
-        });
+      ([entry]) => {
+        setIsVisible(entry.isIntersecting);
       },
-      { threshold: 0.2 }
+      { threshold: 0.1 }
     );
-
-    if (locationRef.current) {
-      observer.observe(locationRef.current);
-    }
-
+    if (locationRef.current) observer.observe(locationRef.current);
     return () => {
       if (locationRef.current) observer.unobserve(locationRef.current);
     };
   }, []);
 
-  // Menu click handlers
-  const handleExploreClick = () => {
-    setTriggerDrop(true);
-    const gallerySection = document.getElementById("gallery");
-    if (gallerySection) {
-      gallerySection.scrollIntoView({ behavior: "smooth" });
-    }
-  };
+  // Location slideshow effect
+  useEffect(() => {
+    if (!isVisible) return;
+    const interval = setInterval(() => {
+      setLocationSlide((prev) => (prev + 1) % slides.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [isVisible]);
 
-  const handleLocationClick = () => {
-    setLocationSlide(0);        // reset to first slide
-    setTriggerLocation(true);   // start slideshow
-    const locationSection = document.getElementById("location");
-    if (locationSection) {
-      locationSection.scrollIntoView({ behavior: "smooth" });
-    }
+  // Footer slideshow effect
+ useEffect(() => {
+  const footer = document.getElementById("contact");
+  let interval;
+
+  const observer = new IntersectionObserver(
+    ([entry]) => {
+      if (entry.isIntersecting) {
+        interval = setInterval(() => {
+          setFooterSlide((prev) => (prev + 1) % footerslides.length);
+        }, 1000); // ✅ Slower: 7 seconds
+      } else {
+        clearInterval(interval);
+      }
+    },
+    { threshold: 0.3 }
+  );
+
+  if (footer) observer.observe(footer);
+
+  return () => {
+    if (footer) observer.unobserve(footer);
+    clearInterval(interval);
   };
+}, []);
+
   return (
     <div className="hotel-container">
       {/* Header */}
@@ -165,48 +174,48 @@ function HotelStay() {
         </div>
         {menuOpen && (
           <div className="dropdown-menu">
-            <a href="#hero" >Home</a>
-            <a href="#gallery" onClick={handleExploreClick}>Explore</a>
-            <a href="#location" onClick={handleLocationClick}>Location</a>
+            <a href="#hero">Home</a>
+            <a href="#gallery">Explore</a>
+            <a href="#location">Location</a>
             <a href="#contact">Contact</a>
           </div>
         )}
       </header>
 
       {/* Hero */}
-      <section className="hero" id="hero">
+      <section
+        className={`hero ${heroVisible ? "visible" : ""}`}
+        id="hero"
+        ref={heroRef}
+      >
         <img src={davidimg1} alt="David Residency" className="hero-image" />
         <div className="hero-text">
-          
           <div className="hero-buttons">
-            <a className="btn explore" href="#gallery"onClick={handleExploreClick}>EXPLORE THE BEAUTY</a>
+            <a className="btn explore" href="#gallery">EXPLORE THE BEAUTY</a>
             <a className="btn contact" href="#contact">CONTACT US</a>
           </div>
         </div>
       </section>
 
       {/* Gallery */}
-     <section
-  ref={galleryRef}
-  className={`gallery ${galleryVisible ? "visible" : ""} ${triggerDrop ? "drop" : ""}`}
-  id="gallery">
-  <h2>Explore</h2>
-  <div className="image-row">
-  {galleryImages.map((img, index) => (
-    <div
-      key={index}
-      className="image-wrap"
-      style={{ "--i": index }}
-      onClick={() => setSelectedImage(img)}
-    >
-      <img src={img} alt={`gallery-${index}`} className="image-item" />
-    </div>
-  ))}
-</div>
-
-</section>
-
-
+      <section
+        ref={galleryRef}
+        className={`gallery-scroll ${galleryVisible ? "visible" : ""}`}
+        id="gallery"
+      >
+        <h2>Explore</h2>
+        <div className="scroll-wrapper">
+          <button className="scroll-arrow left" onClick={() => handleGalleryScroll("left")}>‹</button>
+          <div className="scroll-track" ref={galleryRowRef}>
+            {galleryImages.map((img, index) => (
+              <div key={index} className="scroll-slide" onClick={() => setSelectedImage(img)}>
+                <img src={img} alt={`gallery-${index}`} />
+              </div>
+            ))}
+          </div>
+          <button className="scroll-arrow right" onClick={() => handleGalleryScroll("right")}>›</button>
+        </div>
+      </section>
 
       {/* Modal */}
       {selectedImage && (
@@ -217,26 +226,26 @@ function HotelStay() {
       )}
 
       {/* Location */}
+   {/* Location */}
 <section
   ref={locationRef}
   className={`location-section ${isVisible ? "visible" : ""}`}
   id="location"
 >
   <div className="location-wrapper">
-    {/* Left: Image */}
-  <div className="location-image">
-  <img
-    src={slides[locationSlide].image}
-    alt="David Residency"
-    className="location-photo"
-  />
-  <div className="location-text">
-    <h2>{slides[locationSlide].text}</h2>
-  </div>
-</div>
+    {/* Left side: slideshow */}
+    <div className="location-image">
+      <img
+        src={slides[locationSlide].image}
+        alt="David Residency"
+        className="location-photo"
+      />
+      <div className="location-text">
+        <h2>{slides[locationSlide].text}</h2>
+      </div>
+    </div>
 
-
-    {/* Right: Map */}
+    {/* Right side: map */}
     <div className="map-container">
       <iframe
         title="David Residency Location"
@@ -252,8 +261,6 @@ function HotelStay() {
 </section>
 
 
-
-
       {/* Footer */}
       <footer className="custom-footer" id="contact">
         <div className="footer-contact">
@@ -264,11 +271,11 @@ function HotelStay() {
 
           <p>
             <img src={phoneLogo} alt="Phone" className="icon" />
-            <a href="tel:+919876543210">+91 98765 43210</a>
+            <a >(+91) 94878 30003</a>
           </p>
 
           <div className="social-logo-row">
-            <a href="https://www.davidresidency.com" target="_blank" rel="noopener noreferrer">
+            <a href="info@davidresidency.com" target="_blank" rel="noopener noreferrer">
               <img src={webLogo} alt="Website" className="icon" />
             </a>
 
@@ -278,6 +285,8 @@ function HotelStay() {
             <a href="https://www.instagram.com/davidresidency/" target="_blank" rel="noopener noreferrer">
               <img src={instaLogo} alt="Instagram" className="icon" />
             </a>
+            
+            
           </div>
         </div>
 <div className="footer-slideshow">
@@ -288,10 +297,11 @@ function HotelStay() {
   />
 </div>
 
+
 <div className="slideshow-content">
   <h2>{footerslides[footerSlide].text}</h2>
   <a
-    href={footerslides[footerSlide].link}
+    href="https://www.google.com/search?q=olive+david+residency&oq=olive+david+residency&gs_lcrp=EgZjaHJvbWUyBggAEEUYOTIGCAEQRRhAMggIAhAAGBYYHjIICAMQABgWGB4yCAgEEAAYFhgeMg0IBRAAGIYDGIAEGIoFMg0IBhAAGIYDGIAEGIoFMg0IBxAAGIYDGIAEGIoF0gEJODI0NWoxajE1qAIAsAIA&sourceid=chrome&ie=UTF-8"
     target="_blank"
     rel="noopener noreferrer"
     className="slideshow-link"
@@ -299,6 +309,9 @@ function HotelStay() {
     Learn More
   </a>
 </div>
+<p className="copyright">
+  © {new Date().getFullYear()} David Residency. All rights reserved.
+</p>
       </footer>
     </div>
   );
