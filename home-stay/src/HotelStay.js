@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-
+import { SpeedInsights } from "@vercel/speed-insights/react"
 // Local images
 import image1 from "./david_img4.jpg";
 import image2 from "./david_img5.jpg";
@@ -154,12 +154,12 @@ function HotelStay() {
   <div className="container-fluid d-flex justify-content-between align-items-center">
     {/* Logo */}
     <a className="navbar-brand d-flex align-items-center" href="#hero">
-      <img src={logo} alt="Logo" height="50" className="me-2 rounded" />
+      <img src={logo} alt="Logo" height="40"width="50" className="me-2 rounded" />
     </a>
 
     {/* Centered title */}
     <div className="text-center flex-grow-1">
-      <h1 className="text-warning fst-italic mb-0 ">Welcome to David Residency</h1>
+      <h2 className="text-warning fst-italic mb-0 cd home">Welcome to David Residency</h2>
       <p className="text-warning fst-italic mb-0">Discover our world-class hotel!</p>
     </div>
 
@@ -247,12 +247,12 @@ function HotelStay() {
           </div>
 
           {/* Right side: map */}
-          <div className="col-md-6 italic-text">
+          <div className="col-md-6 italic-text map">
             <iframe
               title="David Residency Location"
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3930.0221840706376!2d78.13988077760843!3d9.93211026482343!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3b00c59126c208ff%3A0x28dc3ce7d555343!2sDavid%20Residency%20Private%20limited!5e0!3m2!1sen!2sin!4v1764064473899!5m2!1sen!2sin"
-              width="100%"
-              height="100%"
+              width="90%"
+              height="90%"
               style={{ border: 0, minHeight: "300px" }}
               allowFullScreen
               loading="lazy"
@@ -267,7 +267,7 @@ function HotelStay() {
           <div className="row g-4">
             {/* Contact info */}
             <div className="col-md-6 italic-text">
-              <h2 className="text-warning">Contact Us</h2>
+              <h2 className="text-warning">CONTACT US</h2>
               <h4>David Residency</h4>
               <p>14-A, Bharathiyar St, Managiri,</p>
               <p>KK Nagar, Madurai, Tamil Nadu 625020</p>
@@ -307,7 +307,7 @@ function HotelStay() {
                 className="img-fluid rounded shadow"
                 style={{ maxHeight: "350px" }}
               />
-              <h2 className="mt-3">{footerslides[footerSlide].text}</h2>
+              <h3 className="mt-3">{footerslides[footerSlide].text}</h3>
               <a
                 href="https://www.google.com/search?q=olive+david+residency"
                 target="_blank"

@@ -21,7 +21,7 @@
   background-color: black;
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 7px;
   font-size: 1.1rem;
   transition: background 0.5s ease;
 }
@@ -82,7 +82,7 @@ html {
   animation: fadeInUp 1s ease forwards;
 }
 #gallery img {
-  max-height: 500px;
+  max-height: 400px;
   object-fit: cover;
   border-radius: 8px;
   box-shadow: 0 4px 10px rgba(133, 129, 129, 0.4);
