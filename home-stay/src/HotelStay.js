@@ -154,7 +154,7 @@ function HotelStay() {
   <div className="container-fluid d-flex justify-content-between align-items-center">
     {/* Logo */}
     <a className="navbar-brand d-flex align-items-center" href="#hero">
-      <img src={logo} alt="Logo" height="40"width="50" className="me-2 rounded" />
+      <img src={logo} alt="Logo" height="40"width="60" className="me-2 rounded" />
     </a>
 
     {/* Centered title */}
